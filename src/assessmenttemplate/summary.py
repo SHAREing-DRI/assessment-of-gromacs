@@ -13,7 +13,7 @@ from assessmenttemplate.tools import read_input_table
 
 
 class Rubric(StrEnum):
-    CPU = auto()
+    Core = auto()
     GPU = auto()
     IO = auto()
     INTRA = auto()
@@ -23,8 +23,8 @@ class Rubric(StrEnum):
 
 def from_string(from_str: str):
     match from_str.lower():
-        case s if s.startswith(Rubric.CPU):
-            return Rubric.CPU
+        case s if s.startswith(Rubric.Core):
+            return Rubric.Core
         case s if s.startswith(Rubric.GPU):
             return Rubric.GPU
         case s if s.startswith(Rubric.IO):
@@ -57,6 +57,9 @@ def summary_to_spiderweb(table: pd.DataFrame) -> plt.Figure:
 
     ax.set_xticks(angles[:-1])
     ax.set_xticklabels(table["Rubric"])
+
+    for label in ax.get_xticklabels():
+        label.set_weight('bold')
 
     ax.set_title("Rubric Scores", fontsize=14)
 
@@ -98,7 +101,7 @@ def summary_parse_args(unparsed_args):
         print(f"args: {args}")
 
     if args.default and not args.output:
-        args.output = f"input/summary.{"svg" if args.svg else "png"}"
+        args.output = f"images/summary.{"svg" if args.svg else "png"}"
 
         if args.verbose:
             print(f"STATUS: Setting output to default filepath:{args.output}")
