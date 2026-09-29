@@ -21,7 +21,11 @@ def scaling_compute_metrics(table: pd.DataFrame, internode=False, verbose=False)
     # Calculate speed-up and parallel efficiency
     serial_time = table.loc[table[proc] == 1, "Time"].iloc[0]
     table["Speed-up"] = serial_time / table["Time"]
-    table["Efficiency"] = table["Speed-up"] / table[proc]
+
+    if internode:
+        table["Efficiency"] = table["Speed-up"] / table[proc] * table["Relative problem size"]
+    else:
+        table["Efficiency"] = table["Speed-up"] / table[proc]
 
     if verbose:
         print(f"Calculated efficiencies")
@@ -33,7 +37,7 @@ def scaling_times_crit_80_60(table: pd.DataFrame, internode=False, prop=False) -
 
     :param table: Pandas dataframe containing parallel efficiency per core count
     :param internode: Generate table for internode run
-    :param prop: Return porportional values instead of direct critical points
+    :param prop: Return proportional values instead of direct critical points
     :return: 80% proportion, 60% proportion
     """
 
@@ -72,14 +76,22 @@ def scaling_times_to_graph(table: pd.DataFrame, internode=False, cat_plot=False,
     ax.set_xlabel(r'$p$')
     ax.set_ylabel(r'$E(p)$')
 
-    proc = "Nodes" if internode else "Cores"
-
     if cat_plot:
-        sns.pointplot(data=table, x=proc, y="Efficiency", ax=ax, color='black',
-                      errorbar=("pi", 100), capsize=0.25)
+        if internode:
+            sns.pointplot(data=table, x="Nodes", y="Efficiency", ax=ax, hue="Relative problem size",
+                          errorbar=("pi", 100), capsize=0.25)
+        else:
+            sns.pointplot(data=table, x="Cores", y="Efficiency", ax=ax, color='black',
+                          errorbar=("pi", 100), capsize=0.25)
     else:
-        sns.lineplot(data=table, x=proc, y="Efficiency", marker='o', ax=ax, color='black', linewidth=3.5,
-                     markersize=10)
+        if internode:
+            sns.lineplot(data=table, x="Nodes", y="Efficiency", marker='o', ax=ax, hue="Relative problem size",
+                         linewidth=3.5, markersize=10)
+        else:
+            sns.lineplot(data=table, x="Cores", y="Efficiency", marker='o', ax=ax, color='black', linewidth=3.5,
+                         markersize=10)
+
+    proc = "Nodes" if internode else "Cores"
 
     if critical_points:
         if verbose:
@@ -115,10 +127,10 @@ def scaling_times_to_markdown(table: pd.DataFrame, internode=False) -> str:
     if internode:
         selection = {"Nodes": "# Nodes"}
     else:
-        selection = {"Cores": "Core/thread count"}
+        selection = {"Cores": "# Cores/threads"}
 
     selection["Time"] = "Time (s)"
-    selection["Efficiency"] = "Parallel efficiency"
+    selection["Efficiency"] = "Parallel efficiency (%)"
 
     return table[list(selection.keys())].rename(columns=selection).to_markdown(index=False)
 
@@ -229,7 +241,10 @@ def scaling_main(unparsed_args):
     table = read_input_table(args)
 
     # Rename columns incase alternative names used
-    table.columns = ["Cores" if args.mode == "intranode" else "Nodes", "Time"]
+    if args.mode == "intranode":
+        table.columns = ["Cores", "Time"]
+    else:
+        table.columns = ["Nodes", "Time", "Relative problem size"]
 
     scaling_compute_metrics(table, internode=args.mode == "internode", verbose=args and args.verbose)
 
@@ -243,7 +258,7 @@ def scaling_main(unparsed_args):
         fig = scaling_times_to_graph(table, internode=args.mode == "internode",
                                      critical_points=args and args.critical_points, verbose=args and args.verbose,
                                      cat_plot=args.graph == "cat")
-        if args.graph_file:
+        if args.graph_file and isinstance(args.graph_file, str):
             # Ensure output directory exists
             if '/' in args.graph_file:
                 os.makedirs(os.path.dirname(args.graph_file), exist_ok=True)
@@ -258,7 +273,7 @@ def scaling_main(unparsed_args):
         if args.verbose:
             print("STATUS: generating markdown")
         table_md = scaling_times_to_markdown(table, internode=args.mode == "internode")
-        if args.markdown_file:
+        if args.markdown_file and isinstance(args.markdown_file, str):
             # Ensure output directory exists
             if '/' in args.markdown_file:
                 os.makedirs(os.path.dirname(args.markdown_file), exist_ok=True)
@@ -272,7 +287,7 @@ def scaling_main(unparsed_args):
         if args.verbose:
             print("STATUS: calculating critical points")
         points = scaling_times_crit_80_60(table, internode=args.mode == "internode", prop=True)
-        if args.critical_points_file:
+        if args.critical_points_file and isinstance(args.critical_points_file, str):
             # Ensure output directory exists
             if '/' in args.critical_points_file:
                 os.makedirs(os.path.dirname(args.critical_points_file), exist_ok=True)

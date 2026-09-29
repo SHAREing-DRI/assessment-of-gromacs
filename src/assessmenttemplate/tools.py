@@ -4,9 +4,10 @@ import os
 from io import StringIO
 
 
+# noinspection argument-list
 def read_input_table(args) -> pd.DataFrame:
     """
-    Read table from stanadrd input, UNIX pipe or a file in CSV or Markdown format and parse into DataFrame.
+    Read table from standard input, UNIX pipe or a file in CSV or Markdown format and parse into DataFrame.
     :param args: User provided arguments containing input file name and verbosity switch
     :return: Table as a Pandas DataFrame
     """
@@ -35,7 +36,8 @@ def read_input_table(args) -> pd.DataFrame:
 
     # Check that the separator exists, implying a Markdown table
     if '|' in lines[0]:
-        print("Assuming Markdown table input, discarding two header rows")
+        if args.verbose:
+            print("Assuming Markdown table input, discarding two header rows")
         # Remove heading line
         del lines[1]
         lines = [line.strip('|').replace("|", ',') for line in lines]
@@ -45,6 +47,9 @@ def read_input_table(args) -> pd.DataFrame:
     table = pd.read_csv(StringIO("\n".join(lines)))
 
     # Drop any extra data
-    table = table.drop(table.columns[2:], axis=1)
+    to_drop = 3 if args.mode == "internode" else 2
+    if args.verbose and args.mode == "internode":
+        print("Keeping three columns as expected for internode")
+    table = table.drop(table.columns[to_drop:], axis=1)
 
     return table
