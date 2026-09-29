@@ -7,7 +7,9 @@ from io import StringIO
 # noinspection argument-list
 def read_input_table(args) -> pd.DataFrame:
     """
-    Read table from standard input, UNIX pipe or a file in CSV or Markdown format and parse into DataFrame.
+    Read table from standard input, UNIX pipe or a file in CSV or Markdown format and
+    parse into a DataFrame.
+
     :param args: User provided arguments containing input file name and verbosity switch
     :return: Table as a Pandas DataFrame
     """

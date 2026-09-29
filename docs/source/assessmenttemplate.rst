@@ -1,8 +1,8 @@
 assessmenttemplate package
 ==========================
 
-assessmenttemplate.intranode module
--------------------------------------
+assessmenttemplate.scaling module
+---------------------------------
 
 .. automodule:: assessmenttemplate.scaling
    :members:

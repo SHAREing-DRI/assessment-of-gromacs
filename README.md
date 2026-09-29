@@ -41,8 +41,8 @@ create the plots and metric required to fill out the [high-level assessment repo
 
 ## The `assessmenttemplate` package
 
-The `assessmenttemplate` Python package and its few dependencies can be installed locally, or in a virtual environment,
-by running the command:
+The `assessmenttemplate` Python package and its few dependencies can be installed locally, or in a virtual environment
+(recommended), by running the command in the repository's root directory:
 
 ```shell
 pip install .
@@ -85,7 +85,7 @@ being established.
 
 Intra-node and inter-node performance analysis figures are generated using the `scaling` module accessed with
 `high-level-plots intranode` and `high-level-plots internode` respectively. The usage information for the
-`intranode` mode is povided below and `internode` uses the same arguments:
+`intranode` mode is provided below and `internode` uses the same arguments:
 
 ```txt
 usage: high-level-plots.py intranode [-h] [-g] [-m] [-c] [-a] [--graph-file GRAPH_FILE] [--markdown-file MARKDOWN_FILE] [--critical-points-file CRITICAL_POINTS_FILE]
@@ -202,6 +202,7 @@ The initial development of the notebook was implemented by Ben Clark. Further wo
 Thomas Flynn, before it was rewritten as scripts. This project has received funding through the UKRI Digital Research
 Infrastructure Programme under grant UKRI1801 (SHAREing).
 
+<!--suppress CheckImageSize -->
 <img src='./images/ukri.png' width=200 style="vertical-align:middle" alt="UKRI logo"/> 
 
 All files in this repository are released under the [MIT License](./LICENSE).

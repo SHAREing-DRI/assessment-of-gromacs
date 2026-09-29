@@ -38,6 +38,7 @@ def scaling_times_crit_80_60(table: pd.DataFrame, internode=False, prop=False) -
     :param table: Pandas dataframe containing parallel efficiency per core count
     :param internode: Generate table for internode run
     :param prop: Return proportional values instead of direct critical points
+
     :return: 80% proportion, 60% proportion
     """
 
@@ -66,7 +67,8 @@ def scaling_times_to_graph(table: pd.DataFrame, internode=False, cat_plot=False,
     :param cat_plot: Create a point plot instead of a line plot
     :param critical_points: Add critical points to the graph
     :param verbose: Verbose output if requested (and arguments are provided)
-    :return: matplotlib figure
+
+    :return: Matplotlib figure
     """
 
     if verbose:
@@ -120,8 +122,10 @@ def scaling_times_to_graph(table: pd.DataFrame, internode=False, cat_plot=False,
 def scaling_times_to_markdown(table: pd.DataFrame, internode=False) -> str:
     """
     Generate Markdown table for intranode or internode rubric
+
     :param table: Pandas dataframe containing parallel efficiency per core count
     :param internode: Generate table for internode run
+
     :return: String containing Markdown table
     """
     if internode:
@@ -136,13 +140,19 @@ def scaling_times_to_markdown(table: pd.DataFrame, internode=False) -> str:
 
 
 def scaling_add_args(main_parser, scaling_rubric="intranode"):
+    """
+    Add arguments for the intranode and internode modes in the parser
+
+    :param main_parser: Main parser to which the modes will be added as subparsers
+    :param scaling_rubric: Adding the parser for "intranode" or "internode"
+    """
     description = (f"Generate a {"strong" if scaling_rubric == "intranode" else "weak"} scaling efficiency graph and "
                    f"table from {"intra-node" if scaling_rubric == "intranode" else "inter-node"} runtimes.")
 
     parser = main_parser.add_parser(scaling_rubric,
                                     description=description,
                                     epilog="Unless an output flag is specified, a requested output will be echoed to "
-                                           "the standard console output." + scaling_main.__doc__
+                                           "the standard console output."
                                     )
 
     parser.add_argument("-g", "--graph", default=None, choices=[None, "cont", "cat"], help="Generate graph; either a "
@@ -163,8 +173,15 @@ def scaling_add_args(main_parser, scaling_rubric="intranode"):
                         default=f'{scaling_rubric}_critical_proportions.txt')
 
 
-def scaling_parse_args(unparsed_args):
-    args = unparsed_args
+def scaling_parse_args(unprocessed_args):
+    """
+    Further process arguments for the intranode or internode modes
+
+    :param unprocessed_args: Arguments from the parser to be further processed for the selected mode
+
+    :return: Final processed arguments for "intranode" or "internode"
+    """
+    args = unprocessed_args
     if args.verbose:
         print(f"args: {args}")
 
@@ -221,15 +238,18 @@ def scaling_parse_args(unparsed_args):
     return args
 
 
-def scaling_main(unparsed_args):
+def scaling_main(unprocessed_args):
     """
-    This script may be passed either a Markdown table containing thread count, time, and (optional) parallel efficiency,
-    or by passing CSV thread count, time.
+    Processes parsed commandline arguments and the input table containing core/thread/node counts, runtime and
+    the relative problem size for intranode. Input can be either a Markdown table or a CSV.
 
-    It can output a matplotlib graph and a Markdown formatted table with all three columns filled in.
+    Produces a line or point plot graph and a Markdown formatted table with core/thread/node counts, runtimes and
+    parallel efficiency.
+
+    :param unprocessed_args: Arguments from the parser to be further processed for the selected mode
     """
 
-    args = scaling_parse_args(unparsed_args)
+    args = scaling_parse_args(unprocessed_args)
 
     ####################
     # INPUT PROCESSING #

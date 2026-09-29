@@ -13,6 +13,9 @@ from assessmenttemplate.tools import read_input_table
 
 
 class Rubric(StrEnum):
+    """
+    Enum representation of the high-level rubrics
+    """
     Core = auto()
     GPU = auto()
     IO = auto()
@@ -22,6 +25,13 @@ class Rubric(StrEnum):
 
 
 def from_string(from_str: str):
+    """
+    Map a rubric name to its enum
+
+    :param from_str: The rubric as a string
+
+    :return: The rubric as an enum
+    """
     match from_str.lower():
         case s if s.startswith(Rubric.Core):
             return Rubric.Core
@@ -42,6 +52,7 @@ def summary_to_spiderweb(table: pd.DataFrame) -> plt.Figure:
     Create matplotlib spiderweb diagram
 
     :param table: Pandas DataFrame containing rubrics and the assigned 0-to-1-normalised score
+
     :return: matplotlib figure
     """
 
@@ -71,6 +82,7 @@ def summary_to_bar_chart(table: pd.DataFrame) -> plt.Figure:
     Create matplotlib bar chart
 
     :param table: Pandas DataFrame containing rubrics and the assigned 0-to-1-normalised score
+
     :return: matplotlib figure
     """
 
@@ -88,6 +100,11 @@ def summary_to_bar_chart(table: pd.DataFrame) -> plt.Figure:
 
 
 def summary_add_args(main_parser):
+    """
+    Add arguments for the summary mode in the parser
+
+    :param main_parser: Main parser to which the modes will be added as subparsers
+    """
     parser = main_parser.add_parser("summary",
                                     description=f"Generate a spiderweb diagram or bar graph for the SHAREing "
                                                 "high-level performance assessment." + summary_main.__doc__)
@@ -95,8 +112,15 @@ def summary_add_args(main_parser):
     parser.add_argument("-b", "--bar", action="store_true", help="Output a bar chart instead of a spiderweb.")
 
 
-def summary_parse_args(unparsed_args):
-    args = unparsed_args
+def summary_parse_args(unprocessed_args):
+    """
+    Further process arguments for the summary mode
+
+    :param unprocessed_args: Arguments from the parser to be further processed for the "summary" mode
+
+    :return: Final processed arguments for "summary"
+    """
+    args = unprocessed_args
     if args.verbose:
         print(f"args: {args}")
 
@@ -117,15 +141,17 @@ def summary_parse_args(unparsed_args):
     return args
 
 
-def summary_main(unparsed_args):
+def summary_main(unprocessed_args):
     """
-    This script may be passed either a Markdown table containing thread count, time, and (optional) parallel efficiency,
-    or by passing CSV thread count, time.
+    Processes parsed commandline arguments and the input table containing summary metrics per rubric. Input can be
+    either a Markdown table or a CSV.
 
-    It can output a matplotlib graph and a Markdown formatted table with all three columns filled in.
+    Produces spiderweb plot and a Markdown formatted table of the summary metrics per rubric as outputs.
+
+    :param unprocessed_args: Arguments from the parser to be further processed for the "summary" mode
     """
 
-    args = summary_parse_args(unparsed_args)
+    args = summary_parse_args(unprocessed_args)
 
     ####################
     # INPUT PROCESSING #
@@ -150,7 +176,7 @@ def summary_main(unparsed_args):
         fig = summary_to_bar_chart(table)
     else:
         fig = summary_to_spiderweb(table)
-    if args.output:
+    if args.output and isinstance(args.output, str):
         # Ensure output directory exists
         if '/' in args.output:
             os.makedirs(os.path.dirname(args.output), exist_ok=True)

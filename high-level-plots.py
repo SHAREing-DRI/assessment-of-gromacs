@@ -5,10 +5,18 @@ import assessmenttemplate.summary as summary
 
 
 def _main():
+    """
+    Processes commandline arguments and the input table containing intranode/internode runtimes per
+    core/thread/node counts, or high-level metrics per rubric. Input can be either a Markdown table or a CSV.
+
+    Produces the relevant graph (line, point or spiderweb plot) and a Markdown formatted version of the input
+    table with further processed data added (like parallel efficiency) if applicable.
+    """
     parser = ap.ArgumentParser(
         prog=os.path.basename(__file__),
         description="Tools to generate plots for the high-level assessment.",
-        epilog="Unless an output flag is specified, a requested output will be echoed to the standard console output."
+        epilog=_main.__doc__ + "Unless an output flag is specified, a requested output will be echoed to the "
+                               "standard console output."
     )
 
     # Source - https://stackoverflow.com/a/75100875

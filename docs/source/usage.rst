@@ -81,7 +81,7 @@ the GPU and internode metrics are still being established.
 ===============================
 Intra-node and inter-node performance analysis figures are generated using the ``scaling`` module accessed with
 ``high-level-plots intranode`` and ``high-level-plots internode`` respectively. The usage information for the
-``intranode`` mode is povided below and `internode`` uses the same arguments:
+``intranode`` mode is provided below and `internode`` uses the same arguments:
 
 .. code-block::
 
