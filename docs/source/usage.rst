@@ -66,7 +66,9 @@ assessment with the ``high-level-plots.py`` script :
       -s, --stdout-graph    Output image data to stdout (useful for piping)
       --show                Show graph in window at runtime.
 
-    Unless an output flag is specified, a requested output will be echoed to the standard console output.
+    Processes commandline arguments and the input table containing intranode/internode runtimes per core/thread/node counts, or high-level metrics per rubric. Input can be either a Markdown table or a CSV. Produces the relevant
+    graph (line, point or spiderweb plot) and a Markdown formatted version of the input table with further processed data added (like parallel efficiency) if applicable. Unless an output flag is specified, a requested output will
+    be echoed to the standard console output.
 
 The script currently only offers two modes: :ref:`intranode-and-internode` and :ref:`summary`.
 Further modules for the high-level, and scripts for the low-level assessment will be added in due course as the
@@ -85,13 +87,14 @@ Intra-node and inter-node performance analysis figures are generated using the `
 
 .. code-block::
 
-    usage: high-level-plots.py intranode [-h] [-g] [-m] [-c] [-a] [--graph-file GRAPH_FILE] [--markdown-file MARKDOWN_FILE] [--critical-points-file CRITICAL_POINTS_FILE]
+    usage: high-level-plots.py intranode [-h] [-g {cont,cat}] [-m] [-c] [-a] [--graph-file GRAPH_FILE] [--markdown-file MARKDOWN_FILE] [--critical-points-file CRITICAL_POINTS_FILE]
 
     Generate a strong scaling efficiency graph and table from intra-node runtimes.
 
     options:
       -h, --help            show this help message and exit
-      -g, --graph           Generate graph.
+      -g, --graph {cont,cat}
+                            Generate graph; either a continuous line plot (cont; default) or a categorical point plot (cat).
       -m, --markdown        Generate markdown table.
       -c, --critical-points
                             Calculate 80 and 60 percent critical values.
@@ -103,7 +106,7 @@ Intra-node and inter-node performance analysis figures are generated using the `
       --critical-points-file CRITICAL_POINTS_FILE
                             Specify an output file for the calculated critical values.
 
-Unless an output flag is specified, a requested output will be echoed to the standard console output. This script may be passed either a Markdown table containing thread count, time, and (optional) parallel efficiency, or by passing CSV thread count, time. It can output a matplotlib graph and a Markdown formatted table with all three columns filled in.
+    Unless an output flag is specified, a requested output will be echoed to the standard console output.
 
 In the ``intranode`` mode, the script can take data input from the standard input, a unix pipe or a file. The
 input is a table which can be in CSV or Markdown format. Suppose we have the following data saved as ``times.csv``:
@@ -172,8 +175,8 @@ The ``summary`` module contains functions to generate the rubric summary graphic
 
     usage: high-level-plots.py summary [-h] [-b]
 
-    Generate a spiderweb diagram or bar graph for the SHAREing high-level performance assessment. This script may be passed either a Markdown table containing thread count, time, and (optional) parallel efficiency, or by passing
-    CSV thread count, time. It can output a matplotlib graph and a Markdown formatted table with all three columns filled in.
+    Generate a spiderweb diagram or bar graph for the SHAREing high-level performance assessment. Processes parsed commandline arguments and the input table containing summary metrics per rubric. Input can be either a Markdown
+    table or a CSV. Produces spiderweb plot and a Markdown formatted table of the summary metrics per rubric as outputs. :param unprocessed_args: Arguments from the parser to be further processed for the "summary" mode
 
     options:
       -h, --help  show this help message and exit
